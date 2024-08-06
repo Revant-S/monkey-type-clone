@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { valiadteUserBody } from "../../validation/userValidation";
-import User from "../models/userModal";
+import User from "../models/userModel";
 import debug from "debug";
 import { ToastMessage } from "../../types/toastmessage";
 import { MongooseError } from "mongoose";
@@ -32,9 +32,7 @@ export const signup = async (req: Request, res: Response) => {
         return res.cookie("token", token, {
             httpOnly: true,
             maxAge: 3600000
-        }).render("home", {
-            user: newUser
-        })
+        }).redirect("/testRoutes/getTest")
     } catch (error: any) {
         errorDegugger(error.message)
         if ((error as MongooseError).message.includes("E11000 duplicate key error collection")) {
@@ -84,7 +82,7 @@ export const signin = async (req: Request, res: Response) => {
         }, true)
 
         const authToken = user.getAuthToken();
-        res.cookie("token", authToken, { httpOnly: true, maxAge: 36000 }).redirect("/home")
+        res.cookie("token", authToken, { httpOnly: true, maxAge: 36000 }).redirect("/testRoutes/getTest")
 
     } catch (error: any) {
         errorDegugger(error.message)

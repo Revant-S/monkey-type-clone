@@ -7,31 +7,23 @@ import morgan from "morgan";
 import path from 'path';
 import cookieParser from 'cookie-parser';
 import authRouters from "./routes/authRoutes"
+import testRoutes from "./routes/testRoutes"
+import { verifyUser } from "./middlewares/authMiddlewares"
 const app = express();
 const startupDebugger = debug("app:startup");
 const dbDebugger = debug("app:dbDebugger")
-
-
-app.set("view engine" , "ejs");
+app.set("view engine", "ejs");
 app.set('views', path.resolve(__dirname, '../client/views'));
 app.use(cookieParser("token"))
-app.use(express.static((path.join(__dirname, '../../public'))));
-// app.use(express.static(path.join(__dirname, '../../public')));
-// console.log((path.join(__dirname, '../../public')));
-
-
-
+app.use("/public", express.static(path.resolve("./public")));
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
-
-
-app.use("/auth",authRouters)
+app.use("/auth", authRouters)
+app.use("/testRoutes",verifyUser, testRoutes)
 if (app.get("env") === "development") {
     app.use(morgan("dev"));
     startupDebugger("DEVELOPMENT ENVIRONEMNT ....\nMORGAN ACTIVE...")
 }
-
-
 const connectToDb = async () => {
     try {
         await mongoose.connect(config.get("mongoDbConnectionURL"));
@@ -41,12 +33,13 @@ const connectToDb = async () => {
         startupDebugger(error.message)
     }
 }
-
 connectToDb();
 
 
-app.get("/test", (req :express.Request,  res : express.Response)=>{
-    res.render("Everything_is_Fine")
+app.get("/test", (req: express.Request, res: express.Response) => {
+    res.render("template", {
+        script: "home"
+    })
 })
 
 const PORT = 8000;

@@ -4,6 +4,7 @@ import bcrypt from "bcrypt"
 import debug from "debug";
 import config from "config"
 import { UserMethods, UserModel, UserSchema } from "../../types/user";
+
 const dbDebugger = debug("app:dbDebugger");
 
 
@@ -22,6 +23,12 @@ const userSchema = new mongoose.Schema<UserSchema, UserModel , UserMethods>({
         type : String,
         min : 6,
         required : true
+    },
+    testResults : {
+        type : [{
+            wordIndex : Number,
+            
+        }]
     }
 })
 userSchema.pre("save", async function(){

@@ -7,7 +7,7 @@ import { UserPayload, UserRequest } from "../../types/request";
 export const verifyUser = async (req: Request, res: Response, next: NextFunction) => {
     const token: string = req.cookies.token;
     if (!token) {
-        redirectToSignin(res , {
+        return  redirectToSignin(res , {
             toastRequired: true,
             toastInfo: {
                 message: "Session Timed Out"
@@ -18,6 +18,7 @@ export const verifyUser = async (req: Request, res: Response, next: NextFunction
     try {
         const payload: UserPayload = <UserPayload>jwt.verify(token, config.get("JWT_SECRET_KEY"));
         (req as UserRequest).userPayload = payload;
+        next()
     } catch (error: any) {
         redirectToSignin(res , {
             toastRequired: true,
@@ -27,6 +28,6 @@ export const verifyUser = async (req: Request, res: Response, next: NextFunction
             svg : "cross"
         }, true)
         errorDegugger((error as jwt.JsonWebTokenError).message);
-
+        return 
     }
 }
